@@ -1,0 +1,36 @@
+# 环境变量
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# 日志文件
+*.log
+logs/
+
+# 数据文件（敏感信息）
+data/*.xlsx
+data/*.xls
+data/sent_emails_blacklist.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.bak

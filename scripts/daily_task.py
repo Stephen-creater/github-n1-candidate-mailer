@@ -6,8 +6,8 @@
     python3 scripts/daily_task.py
 
 功能:
-    - 自动收集候选人（3批 × 100个）
-    - 自动生成observations
+    - 自动收集候选人（3批 × 55个，预留10%缓冲）
+    - 自动生成observations（3批 × 55个）
     - 自动发送邮件（Gmail 50 + QQ 50 + 163 50）
     - 自动更新黑名单（Post-send Hook）
     - 自动删除中间文件
@@ -61,12 +61,12 @@ def daily_task():
     print("🔵"*35)
 
     run_command(
-        "python3 scripts/collect_candidates.py --count 100 --output data/batch1_today.xlsx",
-        "收集第一批候选人（100个）"
+        "python3 scripts/collect_candidates.py --count 55 --output data/batch1_55.xlsx",
+        "收集第一批候选人（55个，预留10%缓冲）"
     )
 
     run_command(
-        "python3 scripts/generate_observations.py data/batch1_today.xlsx",
+        "python3 scripts/generate_observations.py data/batch1_55.xlsx",
         "生成第一批observations"
     )
 
@@ -74,7 +74,7 @@ def daily_task():
     run_command(
         """python3 -c "
 import pandas as pd
-df = pd.read_excel('data/batch1_today.xlsx')
+df = pd.read_excel('data/batch1_55.xlsx')
 df.head(50).to_excel('data/batch1_50.xlsx', index=False)
 print(f'✓ 已取前50个候选人')
 " """,
@@ -87,9 +87,9 @@ print(f'✓ 已取前50个候选人')
     )
 
     # 删除临时文件
-    if os.path.exists('data/batch1_today.xlsx'):
-        os.remove('data/batch1_today.xlsx')
-        print("✓ 已删除临时文件 batch1_today.xlsx")
+    if os.path.exists('data/batch1_55.xlsx'):
+        os.remove('data/batch1_55.xlsx')
+        print("✓ 已删除临时文件 batch1_55.xlsx")
 
     # 第二批：QQ 50封
     print("\n" + "🟡"*35)
@@ -97,12 +97,12 @@ print(f'✓ 已取前50个候选人')
     print("🟡"*35)
 
     run_command(
-        "python3 scripts/collect_candidates.py --count 100 --output data/batch2_today.xlsx",
-        "收集第二批候选人（100个）"
+        "python3 scripts/collect_candidates.py --count 55 --output data/batch2_55.xlsx",
+        "收集第二批候选人（55个，预留10%缓冲）"
     )
 
     run_command(
-        "python3 scripts/generate_observations.py data/batch2_today.xlsx",
+        "python3 scripts/generate_observations.py data/batch2_55.xlsx",
         "生成第二批observations"
     )
 
@@ -110,7 +110,7 @@ print(f'✓ 已取前50个候选人')
     run_command(
         """python3 -c "
 import pandas as pd
-df = pd.read_excel('data/batch2_today.xlsx')
+df = pd.read_excel('data/batch2_55.xlsx')
 df.head(50).to_excel('data/batch2_50.xlsx', index=False)
 print(f'✓ 已取前50个候选人')
 " """,
@@ -123,9 +123,9 @@ print(f'✓ 已取前50个候选人')
     )
 
     # 删除临时文件
-    if os.path.exists('data/batch2_today.xlsx'):
-        os.remove('data/batch2_today.xlsx')
-        print("✓ 已删除临时文件 batch2_today.xlsx")
+    if os.path.exists('data/batch2_55.xlsx'):
+        os.remove('data/batch2_55.xlsx')
+        print("✓ 已删除临时文件 batch2_55.xlsx")
 
     # 第三批：163 50封
     print("\n" + "🟢"*35)
@@ -133,12 +133,12 @@ print(f'✓ 已取前50个候选人')
     print("🟢"*35)
 
     run_command(
-        "python3 scripts/collect_candidates.py --count 100 --output data/batch3_today.xlsx",
-        "收集第三批候选人（100个）"
+        "python3 scripts/collect_candidates.py --count 55 --output data/batch3_55.xlsx",
+        "收集第三批候选人（55个，预留10%缓冲）"
     )
 
     run_command(
-        "python3 scripts/generate_observations.py data/batch3_today.xlsx",
+        "python3 scripts/generate_observations.py data/batch3_55.xlsx",
         "生成第三批observations"
     )
 
@@ -146,7 +146,7 @@ print(f'✓ 已取前50个候选人')
     run_command(
         """python3 -c "
 import pandas as pd
-df = pd.read_excel('data/batch3_today.xlsx')
+df = pd.read_excel('data/batch3_55.xlsx')
 df.head(50).to_excel('data/batch3_50.xlsx', index=False)
 print(f'✓ 已取前50个候选人')
 " """,
@@ -159,9 +159,9 @@ print(f'✓ 已取前50个候选人')
     )
 
     # 删除临时文件
-    if os.path.exists('data/batch3_today.xlsx'):
-        os.remove('data/batch3_today.xlsx')
-        print("✓ 已删除临时文件 batch3_today.xlsx")
+    if os.path.exists('data/batch3_55.xlsx'):
+        os.remove('data/batch3_55.xlsx')
+        print("✓ 已删除临时文件 batch3_55.xlsx")
 
     # 完成
     print("\n" + "="*70)

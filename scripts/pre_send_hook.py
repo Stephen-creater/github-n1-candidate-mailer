@@ -42,14 +42,14 @@ def check_file_before_send(xlsx_file):
     print(f'✅ 内部重复检查: 通过 ({unique} 个唯一邮箱)')
 
     # 检查2: 黑名单
-    blacklist_file = 'data/sent_emails_blacklist.txt'
+    blacklist_file = 'data/sent_emails_blacklist.csv'
     if not os.path.exists(blacklist_file):
         print(f'\n⚠️  黑名单文件不存在: {blacklist_file}')
         print('🚫 阻止发送！请先创建黑名单文件！')
         return False
 
-    with open(blacklist_file, 'r') as f:
-        blacklist = set(line.strip() for line in f if line.strip())
+    blacklist_df = pd.read_csv(blacklist_file)
+    blacklist = set(blacklist_df['email'].tolist())
 
     print(f'📋 黑名单数量: {len(blacklist)}')
 

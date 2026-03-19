@@ -49,10 +49,11 @@ def get_user_details(username):
 
 def load_blacklist():
     """加载黑名单"""
-    blacklist_file = 'data/sent_emails_blacklist.txt'
+    blacklist_file = 'data/sent_emails_blacklist.csv'
     if os.path.exists(blacklist_file):
-        with open(blacklist_file, 'r') as f:
-            return set(line.strip() for line in f if line.strip())
+        import pandas as pd
+        df = pd.read_csv(blacklist_file)
+        return set(df['email'].tolist())
     return set()
 
 def collect_candidates(target_count, min_followers=50, max_followers=1000, min_repos=6):
@@ -200,6 +201,10 @@ def main():
 
     # 保存到Excel
     df = pd.DataFrame(candidates)
+    # 清理所有字符串字段中的非法字符
+    for col in df.columns:
+        if df[col].dtype == 'object':
+            df[col] = df[col].apply(lambda x: ''.join(c for c in str(x) if c.isprintable() or c in '\n\r\t') if pd.notna(x) else x)
     df.to_excel(args.output, index=False)
 
     print(f"✓ 已保存到: {args.output}")

@@ -4,6 +4,15 @@
 
 ## 🚨 最高原则（必须严格遵守）
 
+### 0. 极简代码原则（AI必读）⭐
+- **最少必要代码**: 能用10行解决的绝不写20行
+- **最少必要文件**: 禁止创建冗余文件（文档、配置、工具类等）
+- **最少必要内容**: 每个文件只做一件事，功能单一
+- **禁止过度设计**: 不要添加"可能用到"的功能
+- **禁止创建文档**: 除非用户明确要求，不要创建README/说明/总结等文件
+- **禁止抽象封装**: 不要为了"复用"而创建helper/utils/base类
+- **直接解决问题**: 用最直接的方式实现需求，不绕弯子
+
 ### 1. 绝对不可重复触达同一候选人
 - 每批发送前必须检查黑名单
 - 每批发送后立即更新黑名单
@@ -14,6 +23,14 @@
 - **严格执行**: 每个邮箱只发送分配给它的50封
 - **禁止补发**: 如果某个邮箱发送失败，不要自动用其他邮箱补发
 - **例外情况**: 只有用户明确要求时，才可以用其他邮箱重发失败的邮件
+
+### 3. 优化工作流程（55→55→50）
+- **收集**: 55个候选人（10%缓冲）
+- **生成**: 55个observations
+- **发送**: 前50个
+- **文件**: batch_55.xlsx（完整）→ batch_50.xlsx（待发）
+- **失败保护**: 发送失败时batch_55.xlsx保留可重试
+- **效率**: 相比100→50节省45% API调用
 
 ## 📋 标准工作流程
 
@@ -34,14 +51,17 @@ python3 scripts/daily_task_test.py
 ### 手动执行（如需单独操作）
 
 ```bash
-# 收集候选人
-python3 scripts/collect_candidates.py --count 100 --output data/batch.xlsx
+# 收集候选人（55个，10%缓冲）
+python3 scripts/collect_candidates.py --count 55 --output data/batch_55.xlsx
 
 # 生成observations
-python3 scripts/generate_observations.py data/batch.xlsx
+python3 scripts/generate_observations.py data/batch_55.xlsx
+
+# 取前50个
+python3 -c "import pandas as pd; df = pd.read_excel('data/batch_55.xlsx'); df.head(50).to_excel('data/batch_50.xlsx', index=False)"
 
 # 发送邮件（自动触发pre-send hook检查）
-python3 scripts/send_emails.py --xlsx data/batch.xlsx --template data/email_template.txt --account gmail --yes
+python3 scripts/send_emails.py --xlsx data/batch_50.xlsx --template data/email_template.txt --account gmail --yes
 
 # 注意：post-send hook会自动执行，无需手动调用
 ```
@@ -72,7 +92,7 @@ python3 scripts/send_emails.py --xlsx data/batch.xlsx --template data/email_temp
 ├── requirements.txt                    # Python依赖
 ├── data/
 │   ├── email_template.txt              # 邮件模板（必须包含{{observation}}）
-│   └── sent_emails_blacklist.txt       # 黑名单（TXT格式）
+│   └── sent_emails_blacklist.csv       # 黑名单（CSV格式，含候选人详细信息）
 ├── scripts/
 │   ├── collect_candidates.py           # 收集候选人（自动去重+过滤黑名单）
 │   ├── generate_observations.py        # 生成个性化观察
@@ -89,8 +109,8 @@ python3 scripts/send_emails.py --xlsx data/batch.xlsx --template data/email_temp
 
 ### collect_candidates.py
 - 从GitHub搜索中国主要城市的开发者
-- 筛选条件：50-700 followers，6+ repos
-- 自动去重 + 自动过滤黑名单
+- 筛选条件：50-1000 followers，6+ repos
+- 自动去重 + 自动过滤黑名单（发送前过滤，避免API浪费）
 - 输出：Excel文件（name, username, email, bio, location, repos, followers, profile_url, created_at）
 
 ### generate_observations.py
@@ -113,9 +133,9 @@ python3 scripts/send_emails.py --xlsx data/batch.xlsx --template data/email_temp
 
 ### post_send_hook.py（自动执行）
 - 在send_emails.py成功后自动触发
-- 更新黑名单（sent_emails_blacklist.txt）
-- 删除中间batch文件
-- 发送失败时不执行
+- 更新黑名单（sent_emails_blacklist.csv，含username/email/bio等完整字段）
+- 删除中间batch_50.xlsx文件（batch_55.xlsx保留）
+- 发送失败时不执行，保留所有文件供重试
 
 ### logger.py
 - 极简日志工具（30行代码）
@@ -149,6 +169,8 @@ python3 scripts/send_emails.py --xlsx data/batch.xlsx --template data/email_temp
 3. **Pre-send Hook会自动执行**，无需手动调用
 4. 邮件模板必须包含`{{observation}}`占位符
 5. **不要自动补发**：如果某个邮箱失败，不要自动用其他邮箱补发，除非用户明确要求
+6. **黑名单过滤在收集阶段完成**：避免对已发送候选人调用API
+7. **失败保护**：发送失败时batch_55.xlsx保留，可直接重试无需重新收集
 
 ## 🎯 每日目标
 

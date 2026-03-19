@@ -310,7 +310,7 @@ def test_socks_proxy(host, port, timeout=2):
 def find_available_proxy():
     """动态检测可用的SOCKS5代理端口"""
     # QuickQ常用端口放在前面优先检测
-    common_ports = [10023, 10903, 10034, 1080, 1086, 7890, 7891, 8080, 9050]
+    common_ports = [10026, 10021, 10901, 10023, 10903, 10034, 1080, 1086, 7890, 7891, 8080, 9050]
 
     for port in common_ports:
         if test_socks_proxy('127.0.0.1', port):
@@ -527,7 +527,7 @@ Examples:
     # ============================================================
     # 最高优先级：检查黑名单，绝对不可重复触达
     # ============================================================
-    blacklist_file = 'data/sent_emails_blacklist.txt'
+    blacklist_file = 'data/sent_emails_blacklist.csv'
     if not os.path.exists(blacklist_file):
         print(f"\n{'='*60}")
         print("错误：找不到黑名单文件！")
@@ -536,8 +536,8 @@ Examples:
         print(f"{'='*60}")
         sys.exit(1)
 
-    with open(blacklist_file, 'r', encoding='utf-8') as f:
-        blacklist = set(line.strip() for line in f if line.strip())
+    blacklist_df = pd.read_csv(blacklist_file)
+    blacklist = set(blacklist_df['email'].tolist())
 
     print(f"\n{'='*60}")
     print(f"✓ 已加载黑名单: {len(blacklist)} 个已发送邮箱")
@@ -647,7 +647,7 @@ Examples:
             hook_script = Path(__file__).parent / 'post_send_hook.py'
             if hook_script.exists():
                 result = subprocess.run(
-                    ['python3', str(hook_script), args.xlsx],
+                    ['python3', str(hook_script), args.xlsx, args.account],
                     capture_output=True,
                     text=True
                 )

@@ -19,6 +19,7 @@ logs/
 data/*.xlsx
 data/*.xls
 data/sent_emails_blacklist.txt
+data/sent_emails_blacklist.csv
 
 # IDE
 .vscode/
